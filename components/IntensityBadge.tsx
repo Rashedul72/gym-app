@@ -25,12 +25,14 @@ export function IntensityBadge({ intensity }: IntensityBadgeProps) {
 const styles = StyleSheet.create({
   badge: {
     borderWidth: 1,
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: radius.sm,
+    borderRadius: radius.full,
   },
   text: {
-    fontSize: 11,
-    fontWeight: "600",
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 0.2,
+    textTransform: "uppercase",
   },
 });

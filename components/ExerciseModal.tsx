@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   Image,
   Modal,
@@ -11,6 +12,8 @@ import {
 import type { Exercise } from "../constants/workout-data";
 import { getExerciseImageSource } from "../lib/getExerciseImageSource";
 import { colors, radius } from "../theme/colors";
+import { shadows } from "../theme/shadows";
+import { spacing } from "../theme/spacing";
 import { IntensityBadge } from "./IntensityBadge";
 
 type ExerciseModalProps = {
@@ -24,11 +27,20 @@ export function ExerciseModal({ exercise, onClose }: ExerciseModalProps) {
   return (
     <Modal visible animationType="fade" transparent onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose}>
-        <Pressable style={styles.card} onPress={(e) => e.stopPropagation()}>
+        <Pressable
+          style={[styles.card, shadows.lg]}
+          onPress={(e) => e.stopPropagation()}
+        >
+          <LinearGradient
+            colors={[colors.gradient.start, colors.gradient.end]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.cardAccent}
+          />
           <Pressable style={styles.close} onPress={onClose} hitSlop={12}>
             <MaterialCommunityIcons
               name="close"
-              size={22}
+              size={20}
               color={colors.foreground}
             />
           </Pressable>
@@ -44,7 +56,14 @@ export function ExerciseModal({ exercise, onClose }: ExerciseModalProps) {
           <View style={styles.meta}>
             <Text style={styles.title}>{exercise.name}</Text>
             <View style={styles.row}>
-              <Text style={styles.sets}>{exercise.sets}</Text>
+              <View style={styles.setsPill}>
+                <MaterialCommunityIcons
+                  name="repeat"
+                  size={14}
+                  color={colors.primary}
+                />
+                <Text style={styles.sets}>{exercise.sets}</Text>
+              </View>
               <IntensityBadge intensity={exercise.intensity} />
             </View>
           </View>
@@ -57,59 +76,77 @@ export function ExerciseModal({ exercise, onClose }: ExerciseModalProps) {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.55)",
+    backgroundColor: colors.overlay,
     justifyContent: "center",
     alignItems: "center",
-    padding: 24,
+    padding: spacing.xl,
   },
   card: {
     width: "100%",
-    maxWidth: 400,
+    maxWidth: 380,
     backgroundColor: colors.card,
-    borderRadius: radius.xl,
+    borderRadius: radius["2xl"],
     overflow: "hidden",
     maxHeight: "85%",
   },
+  cardAccent: {
+    height: 4,
+    width: "100%",
+  },
   close: {
     position: "absolute",
-    top: 12,
-    right: 12,
+    top: spacing.md,
+    right: spacing.md,
     zIndex: 2,
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: radius.full,
     backgroundColor: colors.secondary,
     alignItems: "center",
     justifyContent: "center",
   },
   imageWrap: {
     height: 300,
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.xl,
+    borderRadius: radius.xl,
     backgroundColor: colors.muted,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: spacing.lg,
   },
   image: {
     width: "100%",
     height: "100%",
   },
   meta: {
-    padding: 20,
-    gap: 10,
+    padding: spacing.xl,
+    gap: spacing.md,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 22,
+    fontWeight: "800",
+    letterSpacing: -0.4,
     color: colors.foreground,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
     flexWrap: "wrap",
+    gap: spacing.md,
+  },
+  setsPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: radius.full,
+    backgroundColor: colors.primaryMuted,
   },
   sets: {
-    fontSize: 15,
-    color: colors.mutedForeground,
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.primaryDark,
   },
 });

@@ -1,162 +1,239 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Badge } from "../components/Badge";
+import { ScreenBackground } from "../components/ScreenBackground";
 import { colors, radius } from "../theme/colors";
+import { shadows } from "../theme/shadows";
+import { spacing } from "../theme/spacing";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80";
 
+const STATS = [
+  { icon: "calendar-week" as const, label: "6 Training Days" },
+  { icon: "moon-waning-crescent" as const, label: "1 Rest Day" },
+  { icon: "target" as const, label: "Strength + Hypertrophy" },
+];
+
 export function HomeScreen() {
   return (
-    <SafeAreaView style={styles.safe} edges={["top"]}>
-    <ScrollView
-      style={styles.scroll}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
-      <Badge variant="secondary">Structured Training Program</Badge>
+    <ScreenBackground>
+      <SafeAreaView style={styles.safe} edges={["top"]}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.headerRow}>
+            <LinearGradient
+              colors={[colors.gradient.start, colors.gradient.end]}
+              style={styles.logoMark}
+            >
+              <MaterialCommunityIcons
+                name="dumbbell"
+                size={26}
+                color={colors.primaryForeground}
+              />
+            </LinearGradient>
+            <Badge variant="secondary">6-Day Program</Badge>
+          </View>
 
-      <Text style={styles.brandMuted}>iWeekly Split</Text>
- 
+          <Text style={styles.title}>iWeekly</Text>
+          <Text style={styles.titleAccent}>Split</Text>
 
-      <Text style={styles.lead}>
-        A structured 6-day workout plan for strength, muscle growth, and
-        consistency. Built for those who take training seriously.
-      </Text>
+          <Text style={styles.lead}>
+            A structured plan for strength, muscle growth, and consistency —
+            built for serious training.
+          </Text>
 
-      <View style={styles.stats}>
-        <View style={styles.stat}>
-          <MaterialCommunityIcons
-            name="calendar-week"
-            size={18}
-            color={colors.primary}
-          />
-          <Text style={styles.statText}>6 Training Days</Text>
-        </View>
-        <View style={styles.stat}>
-          <MaterialCommunityIcons
-            name="moon-waning-crescent"
-            size={18}
-            color={colors.primary}
-          />
-          <Text style={styles.statText}>1 Rest Day</Text>
-        </View>
-        <View style={styles.stat}>
-          <MaterialCommunityIcons
-            name="target"
-            size={18}
-            color={colors.primary}
-          />
-          <Text style={styles.statText}>Strength + Hypertrophy</Text>
-        </View>
-      </View>
+          <View style={styles.statsRow}>
+            {STATS.map((stat) => (
+              <View key={stat.label} style={[styles.statCard, shadows.sm]}>
+                <View style={styles.statIconWrap}>
+                  <MaterialCommunityIcons
+                    name={stat.icon}
+                    size={18}
+                    color={colors.primary}
+                  />
+                </View>
+                <Text style={styles.statText} numberOfLines={2}>
+                  {stat.label}
+                </Text>
+              </View>
+            ))}
+          </View>
 
-      <View style={styles.heroCard}>
-        <Image source={{ uri: HERO_IMAGE }} style={styles.heroImage} />
-        <View style={styles.heroOverlay}>
-          <Text style={styles.heroCaption}>Weekly Volume</Text>
-          <Text style={styles.heroValue}>6 Days + Rest</Text>
-        </View>
-      </View>
+          <View style={[styles.heroCard, shadows.md]}>
+            <Image source={{ uri: HERO_IMAGE }} style={styles.heroImage} />
+            <LinearGradient
+              colors={["transparent", "rgba(15,23,42,0.85)"]}
+              style={styles.heroGradient}
+            />
+            <View style={styles.heroContent}>
+              <Text style={styles.heroCaption}>Weekly volume</Text>
+              <Text style={styles.heroValue}>6 days + rest</Text>
+              <View style={styles.heroPill}>
+                <MaterialCommunityIcons
+                  name="lightning-bolt"
+                  size={14}
+                  color={colors.primaryLight}
+                />
+                <Text style={styles.heroPillText}>Stay consistent</Text>
+              </View>
+            </View>
+          </View>
 
-      {/* <Text style={styles.hint}>
-        Open the Workout tab to view all 7 days — exercise lists, sets, and
-        illustration images (same as the gym-web app).
-      </Text> */}
-    </ScrollView>
-    </SafeAreaView>
+          <View style={[styles.ctaCard, shadows.sm]}>
+            <MaterialCommunityIcons
+              name="arrow-right-circle"
+              size={22}
+              color={colors.primary}
+            />
+            <Text style={styles.ctaText}>
+              Open <Text style={styles.ctaBold}>Workout</Text> to browse all 7
+              days and exercises
+            </Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </ScreenBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scroll: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+  safe: { flex: 1 },
   content: {
-    padding: 20,
-    paddingBottom: 32,
-    gap: 12,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: 110,
   },
-  brandMuted: {
-    fontSize: 36,
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: spacing.lg,
+  },
+  logoMark: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.lg,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 40,
     fontWeight: "800",
-    letterSpacing: -1,
+    letterSpacing: -1.5,
     color: colors.foreground,
-    marginTop: 8,
+    lineHeight: 44,
   },
-  brand: {
-    fontSize: 36,
+  titleAccent: {
+    fontSize: 40,
     fontWeight: "800",
-    letterSpacing: -1,
+    letterSpacing: -1.5,
     color: colors.primary,
-    marginTop: -8,
+    marginTop: -4,
+    marginBottom: spacing.md,
   },
   lead: {
     fontSize: 16,
     lineHeight: 24,
     color: colors.mutedForeground,
-    marginTop: 4,
   },
-  stats: {
-    marginTop: 12,
-    gap: 8,
-  },
-  stat: {
+  statsRow: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    gap: spacing.sm,
+    marginTop: spacing.xl,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: colors.card,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.muted,
+    padding: spacing.md,
+    alignItems: "flex-start",
+    gap: spacing.sm,
+  },
+  statIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: radius.md,
+    backgroundColor: colors.primaryMuted,
+    alignItems: "center",
+    justifyContent: "center",
   },
   statText: {
-    fontSize: 14,
-    fontWeight: "500",
+    fontSize: 11,
+    fontWeight: "600",
     color: colors.foreground,
+    lineHeight: 15,
   },
   heroCard: {
-    marginTop: 16,
-    borderRadius: radius.xl,
+    marginTop: spacing.xl,
+    height: 240,
+    borderRadius: radius["2xl"],
     overflow: "hidden",
-    borderWidth: 1,
-    borderColor: colors.border,
-    height: 220,
+    backgroundColor: colors.card,
   },
   heroImage: {
     width: "100%",
     height: "100%",
   },
-  heroOverlay: {
+  heroGradient: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  heroContent: {
     position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    padding: 16,
-    backgroundColor: "rgba(0,0,0,0.45)",
+    left: spacing.lg,
+    right: spacing.lg,
+    bottom: spacing.lg,
   },
   heroCaption: {
     fontSize: 12,
-    color: "#d1d5db",
+    fontWeight: "600",
+    color: "#94A3B8",
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
   },
   heroValue: {
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 24,
+    fontWeight: "800",
     color: "#fff",
+    marginTop: 2,
   },
-  hint: {
-    marginTop: 8,
+  heroPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: spacing.md,
+    alignSelf: "flex-start",
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: radius.full,
+    backgroundColor: "rgba(255,255,255,0.12)",
+  },
+  heroPillText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#E2E8F0",
+  },
+  ctaCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    marginTop: spacing.xl,
+    padding: spacing.lg,
+    borderRadius: radius.xl,
+    backgroundColor: colors.card,
+  },
+  ctaText: {
+    flex: 1,
     fontSize: 14,
     lineHeight: 20,
     color: colors.mutedForeground,
+  },
+  ctaBold: {
+    fontWeight: "700",
+    color: colors.primary,
   },
 });

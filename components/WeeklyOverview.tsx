@@ -1,8 +1,11 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { restDay, workoutDays } from "../constants/workout-data";
 import { colors, radius } from "../theme/colors";
+import { shadows } from "../theme/shadows";
+import { spacing } from "../theme/spacing";
 
 type WeeklyOverviewProps = {
   selectedDay: number;
@@ -13,145 +16,157 @@ export function WeeklyOverview({
   selectedDay,
   onSelectDay,
 }: WeeklyOverviewProps) {
+  const items = [
+    ...workoutDays.map((d) => ({
+      key: d.id,
+      day: d.day,
+      label: d.label,
+      sub: `${d.exercises.length} exercises`,
+      index: d.day - 1,
+      isRest: false,
+    })),
+    {
+      key: "rest",
+      day: restDay.day,
+      label: restDay.label,
+      sub: "Recovery",
+      index: 6,
+      isRest: true,
+    },
+  ];
+
   return (
-    <View style={styles.grid}>
-      {workoutDays.map((day) => (
-        <Pressable
-          key={day.id}
-          onPress={() => onSelectDay(day.day - 1)}
-          style={[
-            styles.card,
-            selectedDay === day.day - 1 && styles.cardActive,
-          ]}
-        >
-          <View style={styles.cardTop}>
-            <View
-              style={[
-                styles.dayBadge,
-                selectedDay === day.day - 1 && styles.dayBadgeActive,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.dayNum,
-                  selectedDay === day.day - 1 && styles.dayNumActive,
-                ]}
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.scroll}
+    >
+      {items.map((item) => {
+        const active = selectedDay === item.index;
+        return (
+          <Pressable
+            key={item.key}
+            onPress={() => onSelectDay(item.index)}
+            style={({ pressed }) => [
+              styles.chip,
+              !active && shadows.sm,
+              item.isRest && !active && styles.chipRest,
+              pressed && styles.chipPressed,
+            ]}
+          >
+            {active ? (
+              <LinearGradient
+                colors={[colors.gradient.start, colors.gradient.end]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.chipGradient}
               >
-                {day.day}
-              </Text>
-            </View>
-            <MaterialCommunityIcons
-              name="dumbbell"
-              size={14}
-              color={
-                selectedDay === day.day - 1
-                  ? colors.primary
-                  : colors.mutedForeground
-              }
-            />
-          </View>
-          <Text style={styles.label} numberOfLines={2}>
-            {day.label}
-          </Text>
-          <Text style={styles.sub}>{day.exercises.length} exercises</Text>
-        </Pressable>
-      ))}
-      <Pressable
-        onPress={() => onSelectDay(6)}
-        style={[
-          styles.card,
-          styles.restCard,
-          selectedDay === 6 && styles.restCardActive,
-        ]}
+                <ChipContent item={item} active />
+              </LinearGradient>
+            ) : (
+              <View style={styles.chipInner}>
+                <ChipContent item={item} active={false} />
+              </View>
+            )}
+          </Pressable>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
+function ChipContent({
+  item,
+  active,
+}: {
+  item: {
+    day: number;
+    label: string;
+    sub: string;
+    isRest: boolean;
+  };
+  active: boolean;
+}) {
+  return (
+    <>
+      <View style={styles.chipTop}>
+        <Text style={[styles.dayNum, active && styles.dayNumActive]}>
+          {item.day}
+        </Text>
+        <MaterialCommunityIcons
+          name={item.isRest ? "moon-waning-crescent" : "dumbbell"}
+          size={14}
+          color={active ? "rgba(255,255,255,0.85)" : colors.mutedForeground}
+        />
+      </View>
+      <Text
+        style={[styles.label, active && styles.labelActive]}
+        numberOfLines={1}
       >
-        <View style={styles.cardTop}>
-          <View style={[styles.dayBadge, styles.restBadge]}>
-            <Text style={[styles.dayNum, styles.restNum]}>{restDay.day}</Text>
-          </View>
-          <MaterialCommunityIcons
-            name="moon-waning-crescent"
-            size={14}
-            color={colors.primary}
-          />
-        </View>
-        <Text style={[styles.label, styles.restLabel]}>{restDay.label}</Text>
-        <Text style={styles.sub}>Recovery</Text>
-      </Pressable>
-    </View>
+        {item.label}
+      </Text>
+      <Text style={[styles.sub, active && styles.subActive]}>{item.sub}</Text>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
+  scroll: {
+    gap: spacing.sm,
+    paddingVertical: spacing.xs,
+    paddingRight: spacing.xl,
   },
-  card: {
-    width: "47%",
-    flexGrow: 1,
-    minWidth: "30%",
-    padding: 12,
-    borderRadius: radius.lg,
+  chip: {
+    borderRadius: radius.xl,
+    overflow: "hidden",
+    minWidth: 120,
+  },
+  chipRest: {
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.card,
-  },
-  cardActive: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primaryMuted,
-  },
-  restCard: {
+    borderColor: colors.primaryLight,
     borderStyle: "dashed",
-    borderColor: "#93c5fd",
-    backgroundColor: "#eff6ff",
   },
-  restCardActive: {
-    borderColor: colors.primary,
-    borderStyle: "solid",
+  chipPressed: {
+    opacity: 0.92,
+    transform: [{ scale: 0.98 }],
   },
-  cardTop: {
+  chipGradient: {
+    padding: spacing.md,
+    borderRadius: radius.xl,
+  },
+  chipInner: {
+    padding: spacing.md,
+    backgroundColor: colors.card,
+    borderRadius: radius.xl,
+  },
+  chipTop: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
-  },
-  dayBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: radius.md,
-    backgroundColor: colors.primaryMuted,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  dayBadgeActive: {
-    backgroundColor: colors.primary,
-  },
-  restBadge: {
-    backgroundColor: "#bfdbfe",
+    marginBottom: spacing.sm,
   },
   dayNum: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: 13,
+    fontWeight: "800",
     color: colors.primary,
   },
   dayNumActive: {
     color: colors.primaryForeground,
   },
-  restNum: {
-    color: "#1d4ed8",
-  },
   label: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "700",
     color: colors.foreground,
   },
-  restLabel: {
-    color: "#1d4ed8",
+  labelActive: {
+    color: colors.primaryForeground,
   },
   sub: {
-    marginTop: 4,
+    marginTop: 2,
     fontSize: 11,
     color: colors.mutedForeground,
+  },
+  subActive: {
+    color: "rgba(255,255,255,0.75)",
   },
 });

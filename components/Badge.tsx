@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, type ViewStyle } from "react-native";
 
 import { colors, radius } from "../theme/colors";
+import { spacing } from "../theme/spacing";
 
 type BadgeVariant = "secondary" | "outline";
 
@@ -36,28 +37,27 @@ export function Badge({ children, variant = "secondary", style }: BadgeProps) {
 const styles = StyleSheet.create({
   badge: {
     alignSelf: "flex-start",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: radius.full,
   },
   secondary: {
     backgroundColor: colors.primaryMuted,
-    borderWidth: 1,
-    borderColor: "#bfdbfe",
   },
   outline: {
-    backgroundColor: "transparent",
+    backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.border,
   },
   text: {
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: "700",
+    letterSpacing: 0.3,
   },
   secondaryText: {
     color: colors.primary,
   },
   outlineText: {
-    color: colors.foreground,
+    color: colors.mutedForeground,
   },
 });

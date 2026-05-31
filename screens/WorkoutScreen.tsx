@@ -1,16 +1,13 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useState } from "react";
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useState, type ComponentProps } from "react";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ExerciseModal } from "../components/ExerciseModal";
 import { ExerciseRow } from "../components/ExerciseRow";
+import { ScreenBackground } from "../components/ScreenBackground";
+import { SectionHeader } from "../components/SectionHeader";
 import { WeeklyOverview } from "../components/WeeklyOverview";
 import {
   restDay,
@@ -18,6 +15,8 @@ import {
   type Exercise,
 } from "../constants/workout-data";
 import { colors, radius } from "../theme/colors";
+import { shadows } from "../theme/shadows";
+import { spacing } from "../theme/spacing";
 
 export function WorkoutScreen() {
   const [selectedDay, setSelectedDay] = useState(0);
@@ -30,91 +29,101 @@ export function WorkoutScreen() {
 
   return (
     <>
-      <SafeAreaView style={styles.safe} edges={["top"]}>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.title}>Training Program</Text>
-        <Text style={styles.subtitle}>
-          Your complete 7-day schedule — tap a day, then tap an exercise for the
-          full image
-        </Text>
+      <ScreenBackground>
+        <SafeAreaView style={styles.safe} edges={["top"]}>
+          <ScrollView
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+          >
+            <SectionHeader
+              eyebrow="Your schedule"
+              title="Training Program"
+              subtitle="Pick a day, then tap any exercise to view the illustration"
+            />
 
-        <WeeklyOverview
-          selectedDay={selectedDay}
-          onSelectDay={setSelectedDay}
-        />
+            <WeeklyOverview
+              selectedDay={selectedDay}
+              onSelectDay={setSelectedDay}
+            />
 
-        {isRest ? (
-          <View style={styles.restPanel}>
-            <View style={styles.restIcon}>
-              <MaterialCommunityIcons
-                name="moon-waning-crescent"
-                size={36}
-                color={colors.primary}
-              />
-            </View>
-            <Text style={styles.restTitle}>Day 7 — Rest & Recovery</Text>
-            <Text style={styles.restDesc}>{restDay.description}</Text>
-            <View style={styles.tips}>
-              {restDay.tips.map((tip) => (
-                <View key={tip} style={styles.tip}>
-                  <Text style={styles.tipText}>{tip}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        ) : (
-          day && (
-            <>
-              <View style={styles.dayHero}>
-                <Image
-                  source={{ uri: day.image }}
-                  style={styles.dayImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.dayOverlay}>
-                  <Text style={styles.dayBadge}>Day {day.day}</Text>
-                  <Text style={styles.dayLabel}>{day.label}</Text>
-                </View>
+            {isRest ? (
+              <View style={[styles.restPanel, shadows.md]}>
+                <LinearGradient
+                  colors={[colors.primaryMuted, colors.card]}
+                  style={styles.restGradient}
+                >
+                  <View style={styles.restIcon}>
+                    <MaterialCommunityIcons
+                      name="moon-waning-crescent"
+                      size={32}
+                      color={colors.primary}
+                    />
+                  </View>
+                  <Text style={styles.restTitle}>Day 7 — Rest & Recovery</Text>
+                  <Text style={styles.restDesc}>{restDay.description}</Text>
+                  <View style={styles.tips}>
+                    {restDay.tips.map((tip) => (
+                      <View key={tip} style={styles.tip}>
+                        <Text style={styles.tipText}>{tip}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </LinearGradient>
               </View>
+            ) : (
+              day && (
+                <>
+                  <View style={[styles.dayHero, shadows.md]}>
+                    <Image
+                      source={{ uri: day.image }}
+                      style={styles.dayImage}
+                      resizeMode="cover"
+                    />
+                    <LinearGradient
+                      colors={["transparent", "rgba(15,23,42,0.9)"]}
+                      style={styles.dayGradient}
+                    />
+                    <View style={styles.dayOverlay}>
+                      <View style={styles.dayPill}>
+                        <Text style={styles.dayPillText}>Day {day.day}</Text>
+                      </View>
+                      <Text style={styles.dayLabel}>{day.label}</Text>
+                    </View>
+                  </View>
 
-              <View style={styles.focusCard}>
-                <Text style={styles.focusTitle}>Workout Focus</Text>
-                <Text style={styles.focusText}>{day.description}</Text>
-                <View style={styles.focusMeta}>
-                  <MaterialCommunityIcons
-                    name="timer-outline"
-                    size={16}
-                    color={colors.mutedForeground}
-                  />
-                  <Text style={styles.metaText}>~60 min</Text>
-                  <MaterialCommunityIcons
-                    name="dumbbell"
-                    size={16}
-                    color={colors.mutedForeground}
-                  />
-                  <Text style={styles.metaText}>
-                    {day.exercises.length} exercises
-                  </Text>
-                </View>
-              </View>
+                  <View style={[styles.focusCard, shadows.sm]}>
+                    <View style={styles.focusHeader}>
+                      <MaterialCommunityIcons
+                        name="target"
+                        size={20}
+                        color={colors.primary}
+                      />
+                      <Text style={styles.focusTitle}>Workout focus</Text>
+                    </View>
+                    <Text style={styles.focusText}>{day.description}</Text>
+                    <View style={styles.focusMeta}>
+                      <MetaChip icon="timer-outline" text="~60 min" />
+                      <MetaChip
+                        icon="dumbbell"
+                        text={`${day.exercises.length} exercises`}
+                      />
+                    </View>
+                  </View>
 
-              <Text style={styles.exercisesHeading}>Exercises</Text>
-              {day.exercises.map((exercise) => (
-                <ExerciseRow
-                  key={exercise.name}
-                  exercise={exercise}
-                  onPress={() => setSelectedExercise(exercise)}
-                />
-              ))}
-            </>
-          )
-        )}
-      </ScrollView>
-      </SafeAreaView>
+                  <Text style={styles.exercisesHeading}>Exercises</Text>
+                  {day.exercises.map((exercise) => (
+                    <ExerciseRow
+                      key={exercise.name}
+                      exercise={exercise}
+                      onPress={() => setSelectedExercise(exercise)}
+                    />
+                  ))}
+                </>
+              )
+            )}
+          </ScrollView>
+        </SafeAreaView>
+      </ScreenBackground>
 
       <ExerciseModal
         exercise={selectedExercise}
@@ -124,78 +133,84 @@ export function WorkoutScreen() {
   );
 }
 
+type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
+
+function MetaChip({ icon, text }: { icon: IconName; text: string }) {
+  return (
+    <View style={styles.metaChip}>
+      <MaterialCommunityIcons
+        name={icon}
+        size={14}
+        color={colors.primary}
+      />
+      <Text style={styles.metaText}>{text}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scroll: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+  safe: { flex: 1 },
   content: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: colors.foreground,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    marginTop: 6,
-    marginBottom: 16,
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors.mutedForeground,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: 110,
   },
   dayHero: {
-    marginTop: 20,
+    marginTop: spacing.xl,
     height: 200,
-    borderRadius: radius.xl,
+    borderRadius: radius["2xl"],
     overflow: "hidden",
-    borderWidth: 1,
-    borderColor: colors.border,
+    backgroundColor: colors.card,
   },
   dayImage: {
     width: "100%",
     height: "100%",
   },
+  dayGradient: {
+    ...StyleSheet.absoluteFillObject,
+  },
   dayOverlay: {
     position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    padding: 16,
-    backgroundColor: "rgba(0,0,0,0.55)",
+    left: spacing.lg,
+    right: spacing.lg,
+    bottom: spacing.lg,
   },
-  dayBadge: {
+  dayPill: {
     alignSelf: "flex-start",
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#93c5fd",
-    marginBottom: 4,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 4,
+    borderRadius: radius.full,
+    backgroundColor: "rgba(79,70,229,0.9)",
+    marginBottom: spacing.sm,
+  },
+  dayPillText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: colors.primaryForeground,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
   },
   dayLabel: {
-    fontSize: 22,
-    fontWeight: "700",
+    fontSize: 24,
+    fontWeight: "800",
     color: "#fff",
+    letterSpacing: -0.5,
   },
   focusCard: {
-    marginTop: 16,
-    padding: 16,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.muted,
+    marginTop: spacing.lg,
+    padding: spacing.lg,
+    borderRadius: radius.xl,
+    backgroundColor: colors.card,
+  },
+  focusHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
   },
   focusTitle: {
     fontSize: 16,
     fontWeight: "700",
     color: colors.foreground,
-    marginBottom: 8,
   },
   focusText: {
     fontSize: 14,
@@ -204,69 +219,80 @@ const styles = StyleSheet.create({
   },
   focusMeta: {
     flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  metaChip: {
+    flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    marginTop: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: radius.full,
+    backgroundColor: colors.primaryMuted,
   },
   metaText: {
     fontSize: 12,
-    color: colors.mutedForeground,
-    marginRight: 8,
+    fontWeight: "600",
+    color: colors.primaryDark,
   },
   exercisesHeading: {
-    marginTop: 20,
-    marginBottom: 8,
+    marginTop: spacing.xl,
+    marginBottom: spacing.md,
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: "800",
     color: colors.foreground,
+    letterSpacing: -0.3,
   },
   restPanel: {
-    marginTop: 24,
-    padding: 24,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: "#93c5fd",
-    backgroundColor: "#eff6ff",
+    marginTop: spacing.xl,
+    borderRadius: radius["2xl"],
+    overflow: "hidden",
+    backgroundColor: colors.card,
+  },
+  restGradient: {
+    padding: spacing["2xl"],
     alignItems: "center",
   },
   restIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: radius.lg,
-    backgroundColor: colors.primaryMuted,
+    width: 72,
+    height: 72,
+    borderRadius: radius.xl,
+    backgroundColor: colors.card,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 12,
+    marginBottom: spacing.lg,
+    ...shadows.sm,
   },
   restTitle: {
     fontSize: 20,
     fontWeight: "800",
-    color: "#1d4ed8",
+    color: colors.foreground,
     textAlign: "center",
-    textTransform: "uppercase",
   },
   restDesc: {
-    marginTop: 12,
+    marginTop: spacing.md,
     fontSize: 14,
     lineHeight: 22,
     color: colors.mutedForeground,
     textAlign: "center",
   },
   tips: {
-    marginTop: 16,
-    gap: 8,
+    marginTop: spacing.lg,
+    gap: spacing.sm,
     width: "100%",
   },
   tip: {
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
     backgroundColor: colors.card,
+    ...shadows.sm,
   },
   tipText: {
     fontSize: 14,
+    fontWeight: "500",
     textAlign: "center",
     color: colors.foreground,
   },
