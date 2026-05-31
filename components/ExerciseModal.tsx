@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import {
   Image,
   Modal,
@@ -31,12 +30,7 @@ export function ExerciseModal({ exercise, onClose }: ExerciseModalProps) {
           style={[styles.card, shadows.lg]}
           onPress={(e) => e.stopPropagation()}
         >
-          <LinearGradient
-            colors={[colors.gradient.start, colors.gradient.end]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.cardAccent}
-          />
+          <View style={styles.cardAccent} />
           <Pressable style={styles.close} onPress={onClose} hitSlop={12}>
             <MaterialCommunityIcons
               name="close"
@@ -92,6 +86,7 @@ const styles = StyleSheet.create({
   cardAccent: {
     height: 4,
     width: "100%",
+    backgroundColor: colors.primary,
   },
   close: {
     position: "absolute",

@@ -1,6 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -23,7 +22,8 @@ export function CustomTabBar({
   navigation,
 }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
-  const bottomPad = Math.max(insets.bottom, spacing.md);
+  // Sit closer to the bottom edge while keeping minimal safe-area clearance
+  const bottomPad = insets.bottom > 0 ? Math.max(insets.bottom - 10, 6) : 8;
 
   return (
     <View style={[styles.wrapper, { paddingBottom: bottomPad }]}>
@@ -50,35 +50,28 @@ export function CustomTabBar({
             <Pressable
               key={route.key}
               onPress={onPress}
-              style={styles.tab}
+              style={({ pressed }) => [
+                styles.tab,
+                focused && styles.tabActive,
+                pressed && !focused && styles.tabPressed,
+              ]}
+              android_ripple={{
+                color: "rgba(37, 99, 235, 0.2)",
+                borderless: false,
+                radius: radius.xl,
+              }}
               accessibilityRole="button"
               accessibilityState={focused ? { selected: true } : {}}
               accessibilityLabel={config.label}
             >
-              {focused ? (
-                <LinearGradient
-                  colors={[colors.gradient.start, colors.gradient.end]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.activePill}
-                >
-                  <MaterialCommunityIcons
-                    name={config.icon}
-                    size={22}
-                    color={colors.primaryForeground}
-                  />
-                  <Text style={styles.labelActive}>{config.label}</Text>
-                </LinearGradient>
-              ) : (
-                <View style={styles.inactiveContent}>
-                  <MaterialCommunityIcons
-                    name={config.icon}
-                    size={22}
-                    color={colors.mutedForeground}
-                  />
-                  <Text style={styles.labelInactive}>{config.label}</Text>
-                </View>
-              )}
+              <MaterialCommunityIcons
+                name={config.icon}
+                size={22}
+                color={focused ? colors.primaryForeground : colors.mutedForeground}
+              />
+              <Text style={[styles.label, focused && styles.labelActive]}>
+                {config.label}
+              </Text>
             </Pressable>
           );
         })}
@@ -94,7 +87,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.sm,
+    paddingTop: 0,
     backgroundColor: "transparent",
   },
   track: {
@@ -104,34 +97,31 @@ const styles = StyleSheet.create({
     padding: 5,
     borderWidth: 1,
     borderColor: colors.borderLight,
+    overflow: "hidden",
   },
   tab: {
     flex: 1,
-  },
-  activePill: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
     paddingVertical: 12,
     borderRadius: radius.xl,
+    overflow: "hidden",
   },
-  inactiveContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    paddingVertical: 12,
-    borderRadius: radius.xl,
+  tabActive: {
+    backgroundColor: colors.primary,
   },
-  labelActive: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: colors.primaryForeground,
+  tabPressed: {
+    opacity: 0.85,
   },
-  labelInactive: {
+  label: {
     fontSize: 14,
     fontWeight: "600",
     color: colors.mutedForeground,
+  },
+  labelActive: {
+    fontWeight: "700",
+    color: colors.primaryForeground,
   },
 });

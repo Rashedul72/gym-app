@@ -34,7 +34,7 @@ export function Button({ title, style, disabled, ...props }: ButtonProps) {
 const styles = StyleSheet.create({
   button: {
     width: "100%",
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.primary,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: radius.md,

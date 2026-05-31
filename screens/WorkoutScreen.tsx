@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { useState, type ComponentProps } from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -48,10 +47,7 @@ export function WorkoutScreen() {
 
             {isRest ? (
               <View style={[styles.restPanel, shadows.md]}>
-                <LinearGradient
-                  colors={[colors.primaryMuted, colors.card]}
-                  style={styles.restGradient}
-                >
+                <View style={styles.restContent}>
                   <View style={styles.restIcon}>
                     <MaterialCommunityIcons
                       name="moon-waning-crescent"
@@ -68,7 +64,7 @@ export function WorkoutScreen() {
                       </View>
                     ))}
                   </View>
-                </LinearGradient>
+                </View>
               </View>
             ) : (
               day && (
@@ -79,10 +75,7 @@ export function WorkoutScreen() {
                       style={styles.dayImage}
                       resizeMode="cover"
                     />
-                    <LinearGradient
-                      colors={["transparent", "rgba(15,23,42,0.9)"]}
-                      style={styles.dayGradient}
-                    />
+                    <View style={styles.dayOverlayBg} />
                     <View style={styles.dayOverlay}>
                       <View style={styles.dayPill}>
                         <Text style={styles.dayPillText}>Day {day.day}</Text>
@@ -165,8 +158,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  dayGradient: {
+  dayOverlayBg: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.imageOverlay,
   },
   dayOverlay: {
     position: "absolute",
@@ -179,7 +173,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: 4,
     borderRadius: radius.full,
-    backgroundColor: "rgba(79,70,229,0.9)",
+    backgroundColor: colors.primary,
     marginBottom: spacing.sm,
   },
   dayPillText: {
@@ -251,9 +245,10 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: colors.card,
   },
-  restGradient: {
+  restContent: {
     padding: spacing["2xl"],
     alignItems: "center",
+    backgroundColor: colors.primaryMuted,
   },
   restIcon: {
     width: 72,

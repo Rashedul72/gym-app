@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { restDay, workoutDays } from "../constants/workout-data";
@@ -55,14 +54,9 @@ export function WeeklyOverview({
             ]}
           >
             {active ? (
-              <LinearGradient
-                colors={[colors.gradient.start, colors.gradient.end]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.chipGradient}
-              >
+              <View style={styles.chipActive}>
                 <ChipContent item={item} active />
-              </LinearGradient>
+              </View>
             ) : (
               <View style={styles.chipInner}>
                 <ChipContent item={item} active={false} />
@@ -130,9 +124,10 @@ const styles = StyleSheet.create({
     opacity: 0.92,
     transform: [{ scale: 0.98 }],
   },
-  chipGradient: {
+  chipActive: {
     padding: spacing.md,
     borderRadius: radius.xl,
+    backgroundColor: colors.primary,
   },
   chipInner: {
     padding: spacing.md,

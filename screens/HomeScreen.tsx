@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -27,21 +26,18 @@ export function HomeScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.headerRow}>
-            <LinearGradient
-              colors={[colors.gradient.start, colors.gradient.end]}
-              style={styles.logoMark}
-            >
+            <View style={styles.logoMark}>
               <MaterialCommunityIcons
                 name="dumbbell"
                 size={26}
                 color={colors.primaryForeground}
               />
-            </LinearGradient>
+            </View>
             <Badge variant="secondary">6-Day Program</Badge>
           </View>
 
-          <Text style={styles.title}>iWeekly</Text>
-          <Text style={styles.titleAccent}>Split</Text>
+          <Text style={styles.title}>iWeekly Split</Text>
+
 
           <Text style={styles.lead}>
             A structured plan for strength, muscle growth, and consistency —
@@ -67,10 +63,7 @@ export function HomeScreen() {
 
           <View style={[styles.heroCard, shadows.md]}>
             <Image source={{ uri: HERO_IMAGE }} style={styles.heroImage} />
-            <LinearGradient
-              colors={["transparent", "rgba(15,23,42,0.85)"]}
-              style={styles.heroGradient}
-            />
+            <View style={styles.heroOverlay} />
             <View style={styles.heroContent}>
               <Text style={styles.heroCaption}>Weekly volume</Text>
               <Text style={styles.heroValue}>6 days + rest</Text>
@@ -120,6 +113,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: colors.primary,
   },
   title: {
     fontSize: 40,
@@ -179,8 +173,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  heroGradient: {
+  heroOverlay: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.imageOverlay,
   },
   heroContent: {
     position: "absolute",
